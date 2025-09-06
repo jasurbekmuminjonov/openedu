@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "O'quv markazlari uchun crm platformaning server qismi",
+  "homepage": "https://github.com/jasurbekmuminjonov/openedu#readme",
+  "bugs": {
+    "url": "https://github.com/jasurbekmuminjonov/openedu/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasurbekmuminjonov/openedu.git"
+  },
+  "license": "ISC",
+  "author": "https://t.me/jasurbek_muminjonov",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "node-cron": "^4.2.1"
+  }
+}
