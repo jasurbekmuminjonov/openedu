@@ -2,18 +2,23 @@ const mongoose = require("mongoose");
 
 const OrganizationSchema = new mongoose.Schema(
   {
-    org_name: {
+    name: {
       type: String,
       required: true,
     },
-    org_phone: {
+    phone: {
       type: String,
       required: true, //+998901234567
       unique: true,
     },
-    org_password: {
+    password: {
       type: String,
       required: true,
+    },
+    expense_category: {
+      type: mongoose.Types.ObjectId,
+      ref: "ExpenseCategory",
+      default: null,
     },
     saved_extra_fields: {
       type: [
@@ -21,7 +26,7 @@ const OrganizationSchema = new mongoose.Schema(
           schema: {
             type: String,
             required: true,
-            enum: ["user", "subject", "group", "teacher", "staff"],
+            enum: ["student", "subject", "group", "teacher", "staff"],
           },
           field_name: {
             type: String,

@@ -10,9 +10,15 @@ const GroupSchema = new mongoose.Schema(
     students: {
       type: [
         {
-          type: mongoose.Types.ObjectId,
-          ref: "Student",
-          required: true,
+          student_id: {
+            type: mongoose.Types.ObjectId,
+            ref: "Student",
+            required: true,
+          },
+          joined_date: {
+            type: Date,
+            required: true,
+          },
         },
       ],
       default: [],
@@ -21,6 +27,29 @@ const GroupSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Teacher",
       default: null,
+    },
+    subject_id: {
+      type: mongoose.Types.ObjectId,
+      ref: "Subject",
+      default: null,
+    },
+    lesson_days: {
+      type: [
+        {
+          type: String,
+          required: true,
+          enum: [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+          ],
+        },
+      ],
+      default: [],
     },
     org_id: {
       type: mongoose.Types.ObjectId,

@@ -17,89 +17,102 @@ const Teacher = require("../models/teacher.model");
 
 exports.createOrganization = async (req, res) => {
   try {
-    const { org_password } = req.body;
-    const hashed = await hashPassword(org_password);
-    await Org.create({ ...req.body, org_password: hashed });
-    return res.status({ message: "success" });
+    const { password } = req.body;
+    const hashed = await hashPassword(password);
+    const org = await Org.create({ ...req.body, password: hashed });
+    const expCat = await ExpenseCategory.create({
+      org_id: org._id,
+      expense_category_name: "To'lov va balans muammolari",
+    });
+    await Org.findByIdAndUpdate(org._id, { expense_category: expCat });
+    return res.json({ message: "success" });
   } catch (err) {
     console.log(err.message);
-    return res.status(500).json({ message: "server_error", err });
+    return res
+      .status(500)
+      .json({ message: "server_error", data: { err: err.message } });
   }
 };
 
 exports.loginOrganization = async (req, res) => {
   try {
-    const { org_phone, org_password } = req.body;
-    const org = await Org.findOne({ org_phone });
+    const { phone, password } = req.body;
+    const org = await Org.findOne({ phone });
     if (!org) {
-      return res.json({ message: "organization_not_found" });
+      return res.status(400).json({ message: "organization_not_found" });
     }
-    const isMatch = await comparePassword(org_password, org.org_password);
+    const isMatch = await comparePassword(password, org.password);
     if (!isMatch) {
-      return res.json({ message: "password_incorrect" });
+      return res.status(400).json({ message: "password_incorrect" });
     }
     const token = generateToken({ org_id: org._id, role: "admin" });
-    res.json({ message: "success", data: { token } });
+    res.json({ message: "success", data: { token, org } });
   } catch (err) {
     console.log(err.message);
-    return res.status(500).json({ message: "server_error", err });
+    return res
+      .status(500)
+      .json({ message: "server_error", data: { err: err.message } });
   }
 };
 
 exports.editOrganizationPassword = async (req, res) => {
   try {
-    const { org_password } = req.body;
+    const { password } = req.body;
     const { org_id } = req.user;
     const org = await Org.findById(org_id);
     if (!org) {
-      return res.json({ message: "organization_not_found" });
+      return res.status(400).json({ message: "organization_not_found" });
     }
-    const hashed = await hashPassword(org_password);
-    org.org_password = hashed;
+    const hashed = await hashPassword(password);
+    org.password = hashed;
     await org.save();
     res.json({ message: "success" });
   } catch (err) {
     console.log(err.message);
-    return res.status(500).json({ message: "Serverda xatolik", err });
+    return res
+      .status(500)
+      .json({ message: "server_error", data: { err: err.message } });
   }
 };
 
 exports.editOrganization = async (req, res) => {
   try {
-    const { org_phone, saved_extra_fields, org_name } = req.body;
+    const { phone, saved_extra_fields, name } = req.body;
     const { org_id } = req.user;
     const org = await Org.findById(org_id);
     if (!org) {
-      return res.json({ message: "organization_not_found" });
+      return res.status(400).json({ message: "organization_not_found" });
     }
-    if (org_phone) {
-      org.org_phone = org_phone;
+    if (phone) {
+      org.phone = phone;
     }
     if (saved_extra_fields) {
       org.saved_extra_fields = saved_extra_fields;
     }
-    if (org_name) {
-      org.org_name = org_name;
+    if (name) {
+      org.name = name;
     }
     await org.save();
     res.json({ message: "success" });
   } catch (err) {
     console.log(err.message);
-    return res.status(500).json({ message: "Serverda xatolik", err });
+    return res
+      .status(500)
+      .json({ message: "server_error", data: { err: err.message } });
   }
 };
 
 exports.terminateOrganization = async (req, res) => {
   try {
-    const { org_password } = req.body;
+    const { password } = req.body;
     const org = await Org.findById(req.user.org_id);
     if (!org) {
-      return res.json({ message: "organization_not_found" });
+      return res.status(400).json({ message: "organization_not_found" });
     }
 
-    const isMatch = await comparePassword(org_password, org.org_password);
+    const isMatch = await comparePassword(password, org.password);
     if (!isMatch) {
-      return res.json({ message: "password_incorrect" });
+      return res.status(400).json({ message: "password_incorrect" });
     }
 
     await Promise.all([
@@ -122,6 +135,6 @@ exports.terminateOrganization = async (req, res) => {
     console.error(err.message);
     return res
       .status(500)
-      .json({ message: "Serverda xatolik", err: err.message });
+      .json({ message: "server_error", data: { err: err.message } });
   }
 };

@@ -23,6 +23,10 @@ const StudentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    last_active: {
+      type: Date,
+      default: null,
+    },
     password: { type: String, required: true },
     extra_fields: {
       type: [
@@ -33,6 +37,21 @@ const StudentSchema = new mongoose.Schema(
           },
           field_value: {
             type: String,
+            required: true,
+          },
+        },
+      ],
+      default: [],
+    },
+    deductions: {
+      type: [
+        {
+          deduction_date: {
+            type: Date,
+            required: true,
+          },
+          deduction_amount: {
+            type: Number,
             required: true,
           },
         },

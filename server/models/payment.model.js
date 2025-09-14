@@ -16,6 +16,11 @@ const PaymentSchema = new mongoose.Schema(
       ref: "Organization",
       required: true,
     },
+    staff_id: {
+      type: mongoose.Types.ObjectId,
+      ref: "Staff",
+      required: true,
+    },
   },
   { timestamps: true }
 );

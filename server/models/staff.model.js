@@ -7,11 +7,11 @@ const StaffSchema = new mongoose.Schema(
         {
           field_name: {
             type: String,
-            required: true,
+            default: "",
           },
           field_value: {
             type: String,
-            required: true,
+            default: "",
           },
         },
       ],
@@ -36,12 +36,11 @@ const StaffSchema = new mongoose.Schema(
         {
           type: String,
           enum: [
-            "user",
+            "student",
             "payment",
             "salary",
             "expense",
             "group",
-            "staff",
             "subscription",
             "subject",
             "teacher",

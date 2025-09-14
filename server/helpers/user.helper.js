@@ -6,7 +6,7 @@ const hashPassword = async (password) => {
   return bcrypt.hash(password, salt);
 };
 
-const generateToken = ({ org_id, role, user_id = null, expires }) => {
+const generateToken = ({ org_id, role, user_id = null, expires = "7d" }) => {
   return jwt.sign({ user_id, role, org_id }, process.env.JWT_SECRET, {
     expiresIn: expires,
   });

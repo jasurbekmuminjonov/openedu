@@ -16,6 +16,31 @@ const SubscriptionSchema = new mongoose.Schema(
       min: 1,
       max: 31,
     },
+    last_charged_month: {
+      type: Number,
+      default: null,
+      min: 0,
+      max: 11,
+    },
+    last_charged_year: {
+      type: Number,
+      default: null,
+    },
+    extra_fields: {
+      type: [
+        {
+          field_name: {
+            type: String,
+            default: "",
+          },
+          field_value: {
+            type: String,
+            default: "",
+          },
+        },
+      ],
+      default: [],
+    },
     org_id: {
       type: mongoose.Types.ObjectId,
       ref: "Organization",
