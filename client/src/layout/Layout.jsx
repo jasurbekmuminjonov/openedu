@@ -8,12 +8,13 @@ import {
 } from "react-icons/fa";
 import { PiBooksFill, PiStudentBold } from "react-icons/pi";
 import { MdGroups, MdOutlinePayments } from "react-icons/md";
-import { GrMoney } from "react-icons/gr";
+import { GrDocumentText, GrMoney } from "react-icons/gr";
 import { IoAnalyticsSharp, IoBookOutline } from "react-icons/io5";
 import { FiUserMinus } from "react-icons/fi";
 import { TbLogout } from "react-icons/tb";
 import { useState } from "react";
 import { Modal } from "antd";
+import { IoMdSettings } from "react-icons/io";
 const Layout = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const location = useLocation();
@@ -89,6 +90,13 @@ const Layout = () => {
             Darslar
           </Link>
           <Link
+            className={location.pathname === "/exam" && "active"}
+            to="/exam"
+          >
+            <GrDocumentText size={20} />
+            Imtihon
+          </Link>
+          <Link
             className={location.pathname === "/subject" && "active"}
             to="/subject"
           >
@@ -129,6 +137,13 @@ const Layout = () => {
           >
             <IoAnalyticsSharp size={20} />
             Analitika
+          </Link>
+          <Link
+            className={location.pathname === "/settings" && "active"}
+            to="/settings"
+          >
+            <IoMdSettings size={20} />
+            Sozlamalar
           </Link>
         </div>
         <button onClick={() => setLogoutModal(true)}>

@@ -6,6 +6,10 @@ export const organizationApi = api.injectEndpoints({
       query: (body) => ({ url: "/organization/create", method: "POST", body }),
       invalidatesTags: ["Organization"],
     }),
+    getOrganization: builder.query({
+      query: () => ({ url: "/organization/get" }),
+      providesTags: ["Organization"],
+    }),
     loginOrganization: builder.mutation({
       query: (body) => ({ url: "/organization/login", method: "POST", body }),
       invalidatesTags: ["Organization"],
@@ -39,4 +43,5 @@ export const {
   useEditOrganizationMutation,
   useEditOrganizationPasswordMutation,
   useTerminateOrganizationMutation,
+  useGetOrganizationQuery
 } = organizationApi;

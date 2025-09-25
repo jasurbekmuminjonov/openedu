@@ -7,8 +7,10 @@ export const paymentApi = api.injectEndpoints({
       invalidatesTags: ["Payment"],
     }),
     getPayment: builder.query({
-      query: ({ student_id = "" }) => ({
-        url: `/payment/get?student_id=${student_id}`,
+      query: ({ student_id } = {}) => ({
+        url: student_id
+          ? `/payment/get?student_id=${student_id}`
+          : "/payment/get",
       }),
       providesTags: ["Payment"],
     }),

@@ -8,11 +8,11 @@ export const expenseApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ExpenseCategory"],
+      invalidatesTags: ["Expense"],
     }),
     getExpenseCategory: builder.query({
       query: () => ({ url: "/expense/category" }),
-      providesTags: ["ExpenseCategory"],
+      providesTags: ["Expense"],
     }),
     deleteExpenseCategory: builder.mutation({
       query: (body) => ({
@@ -20,7 +20,7 @@ export const expenseApi = api.injectEndpoints({
         method: "DELETE",
         body,
       }),
-      invalidatesTags: ["ExpenseCategory"],
+      invalidatesTags: ["Expense"],
     }),
     createExpense: builder.mutation({
       query: (body) => ({ url: "/expense/create", method: "POST", body }),

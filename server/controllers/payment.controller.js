@@ -1,5 +1,7 @@
 const Payment = require("../models/payment.model");
 const Student = require("../models/student.model");
+const Org = require("../models/organization.model");
+const Expense = require("../models/expense.model");
 const mongoose = require("mongoose");
 
 exports.createPayment = async (req, res) => {
@@ -7,10 +9,20 @@ exports.createPayment = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { student_id, payment_amount } = req.body;
-    const { user_id } = req.user;
+    const { student_id, payment_amount, is_expense } = req.body;
+    const { user_id, org_id } = req.user;
     if (!user_id) {
       return res.status(400).json({ message: "for_staff_only" });
+    }
+    if (is_expense) {
+      const org = await Org.findById(org_id);
+      const student = await Student.findById(student_id);
+      await Expense.create({
+        expense_category_id: org.expense_category,
+        expense_subname: `${student.first_name} ${student.last_name} balansda xatolik`,
+        expense_amount: payment_amount,
+        org_id,
+      });
     }
     await Student.findByIdAndUpdate(
       student_id,
@@ -19,7 +31,7 @@ exports.createPayment = async (req, res) => {
     );
 
     const payment = await Payment.create(
-      [{ ...req.body, staff_id: user_id, org_id: req.user.org_id }],
+      [{ ...req.body, staff_id: user_id, org_id }],
       { session }
     );
 

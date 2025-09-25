@@ -18,7 +18,13 @@ exports.createTeacher = async (req, res) => {
 
 exports.getTeacher = async (req, res) => {
   try {
-    const teacher = await Teacher.find({ org_id: req.user.org_id });
+    const { id } = req.query;
+    let teacher;
+    if (id) {
+      teacher = await Teacher.findById(id);
+    } else {
+      teacher = await Teacher.find({ org_id: req.user.org_id });
+    }
     res.json(teacher);
   } catch (err) {
     console.log(err.message);

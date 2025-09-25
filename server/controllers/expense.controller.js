@@ -1,6 +1,6 @@
 const ExpenseCategory = require("../models/expense-category.model");
 const Expense = require("../models/expense.model");
-
+const mongoose = require("mongoose");
 exports.createExpenseCategory = async (req, res) => {
   try {
     const expenseCategory = await ExpenseCategory.create({
@@ -29,7 +29,9 @@ exports.createExpense = async (req, res) => {
 
 exports.getExpense = async (req, res) => {
   try {
-    const expense = await Expense.find({ org_id: req.user.org_id });
+    const expense = await Expense.find({ org_id: req.user.org_id }).populate(
+      "expense_category_id"
+    );
     res.json(expense);
   } catch (err) {
     console.log(err.message);
@@ -38,10 +40,28 @@ exports.getExpense = async (req, res) => {
 };
 exports.getExpenseCategory = async (req, res) => {
   try {
-    const expenseCategory = await ExpenseCategory.find({
-      org_id: req.user.org_id,
-    });
-    res.json(expenseCategory);
+    const categoriesWithTotal = await ExpenseCategory.aggregate([
+      { $match: { org_id: new mongoose.Types.ObjectId(req.user.org_id) } },
+
+      {
+        $lookup: {
+          from: "expenses",
+          localField: "_id",
+          foreignField: "expense_category_id",
+          as: "expenses",
+        },
+      },
+
+      {
+        $addFields: {
+          total_expense: { $sum: "$expenses.expense_amount" },
+        },
+      },
+
+      { $project: { expenses: 0 } },
+    ]);
+
+    res.json(categoriesWithTotal);
   } catch (err) {
     console.log(err.message);
     return res.status(500).json({ message: "server_error", data: { err } });

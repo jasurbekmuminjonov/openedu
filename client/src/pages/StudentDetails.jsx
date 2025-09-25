@@ -139,7 +139,7 @@ const StudentDetails = () => {
       />
       <p>O'quvchining to'lovlari</p>
       <Table
-        dataSource={payment.sort(
+        dataSource={[...(payment || [])].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         )}
         columns={[
@@ -168,6 +168,20 @@ const StudentDetails = () => {
           (a, b) => new Date(b.deduction_date) - new Date(a.deduction_date)
         )}
         columns={[
+          {
+            title: "Abonement",
+            render: (_, record) =>
+              record.group_id.subscription_id.subscription_name,
+          },
+          {
+            title: "Fan",
+            render: (_, record) => record.group_id.subject_id.subject_name,
+          },
+          {
+            title: "O'qituvchi",
+            render: (_, record) =>
+              `${record.group_id.teacher_id.first_name} ${record.group_id.teacher_id.last_name}`,
+          },
           {
             title: "Yechish summasi",
             dataIndex: "deduction_amount",

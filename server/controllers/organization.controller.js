@@ -23,6 +23,7 @@ exports.createOrganization = async (req, res) => {
     const expCat = await ExpenseCategory.create({
       org_id: org._id,
       expense_category_name: "To'lov va balans muammolari",
+      color: "#f44336",
     });
     await Org.findByIdAndUpdate(org._id, { expense_category: expCat });
     return res.json({ message: "success" });
@@ -136,5 +137,15 @@ exports.terminateOrganization = async (req, res) => {
     return res
       .status(500)
       .json({ message: "server_error", data: { err: err.message } });
+  }
+};
+
+exports.getOrganization = async (req, res) => {
+  try {
+    const org = await Org.findById(req.user.org_id);
+    res.json(org);
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({ message: "Serverda xatolik", err });
   }
 };

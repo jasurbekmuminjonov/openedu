@@ -31,7 +31,9 @@ exports.editStudent = async (req, res) => {
 
 exports.getStudent = async (req, res) => {
   try {
-    const student = await Student.find({ org_id: req.user.org_id });
+    const student = await Student.find({ org_id: req.user.org_id }).populate(
+      "deductions.group_id"
+    );
     res.json(student);
   } catch (err) {
     console.log(err.message);
@@ -48,7 +50,14 @@ exports.getStudentByQuery = async (req, res) => {
     }
 
     if (id) {
-      const student = await Student.findById(id);
+      const student = await Student.findById(id).populate({
+        path: "deductions.group_id",
+        populate: [
+          { path: "subscription_id", model: "Subscription" },
+          { path: "subject_id", model: "Subject" },
+          { path: "teacher_id", model: "Teacher" },
+        ],
+      });
       if (!student) {
         return res.status(404).json({ message: "student_not_found" });
       }
@@ -64,9 +73,23 @@ exports.getStudentByQuery = async (req, res) => {
 
       const ids = group.students.map((s) => s.student_id);
 
-      students = await Student.find({ _id: { $in: ids } });
+      students = await Student.find({ _id: { $in: ids } }).populate({
+        path: "deductions.group_id",
+        populate: [
+          { path: "subscription_id", model: "Subscription" },
+          { path: "subject_id", model: "Subject" },
+          { path: "teacher_id", model: "Teacher" },
+        ],
+      });
     } else {
-      students = await Student.find({ org_id: req.user.org_id });
+      students = await Student.find({ org_id: req.user.org_id }).populate({
+        path: "deductions.group_id",
+        populate: [
+          { path: "subscription_id", model: "Subscription" },
+          { path: "subject_id", model: "Subject" },
+          { path: "teacher_id", model: "Teacher" },
+        ],
+      });
     }
 
     if (q) {

@@ -26,6 +26,7 @@ const Payment = () => {
   const [selectedStudent, setSelectedStudent] = useState([]);
   const { data: payments = [], isLoading: paymentQueryLoading } =
     useGetPaymentQuery();
+
   const { data: staffData = [] } = useGetStaffQuery();
   const [isExpense, setIsExpense] = useState(false);
   const [createPayment, { isLoading: paymentLoading }] =
@@ -42,6 +43,7 @@ const Payment = () => {
         const res = await createPayment({
           student_id: s._id,
           payment_amount: values.payment_amount,
+          is_expense: isExpense,
         }).unwrap();
         notification.success({ message: res.message });
       }

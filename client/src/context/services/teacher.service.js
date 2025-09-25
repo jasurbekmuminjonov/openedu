@@ -7,7 +7,9 @@ export const teacherApi = api.injectEndpoints({
       invalidatesTags: ["Teacher"],
     }),
     getTeacher: builder.query({
-      query: () => ({ url: "/teacher/get" }),
+      query: ({ id } = {}) => ({
+        url: id ? `/teacher/get?id=${id}` : "/teacher/get",
+      }),
       providesTags: ["Teacher"],
     }),
   }),

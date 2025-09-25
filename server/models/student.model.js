@@ -54,6 +54,11 @@ const StudentSchema = new mongoose.Schema(
             type: Number,
             required: true,
           },
+          group_id: {
+            type: mongoose.Types.ObjectId,
+            ref: "Group",
+            required: true,
+          },
         },
       ],
       default: [],

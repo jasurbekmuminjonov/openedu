@@ -15,7 +15,12 @@ exports.createSalary = async (req, res) => {
 
 exports.getSalary = async (req, res) => {
   try {
-    const salary = await Salary.find({ org_id: req.user.org_id });
+    const { teacher_id } = req.query;
+    const salary = await Salary.find(
+      teacher_id
+        ? { org_id: req.user.org_id, teacher_id }
+        : { org_id: req.user.org_id }
+    ).populate("teacher_id");
     res.json(salary);
   } catch (err) {
     console.log(err.message);

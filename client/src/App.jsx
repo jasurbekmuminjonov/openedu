@@ -17,9 +17,19 @@ import StudentDetails from "./pages/StudentDetails";
 import Lesson from "./pages/Lesson";
 import Attendance from "./pages/Attendance";
 import TeacherDetails from "./pages/TeacherDetails";
+import Exam from "./pages/Exam";
+import { useEffect } from "react";
+import Settings from "./pages/Settings";
 
 const App = () => {
   const token = localStorage.getItem("token");
+  const primaryColor = localStorage.getItem("primaryColor");
+  const userFont = localStorage.getItem("userFont");
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--primary-color", primaryColor || "#1677ff");
+    root.style.setProperty("--user-font", userFont || "'Poppins', sans-serif");
+  }, [primaryColor, userFont]);
   return token ? (
     <Routes>
       <Route element={<Layout />}>
@@ -31,6 +41,7 @@ const App = () => {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/student/:id" element={<StudentDetails />} />
         <Route path="/lesson" element={<Lesson />} />
+        <Route path="/exam" element={<Exam />} />
         <Route path="/group" element={<Group />} />
         <Route path="/group/:id" element={<GroupDetails />} />
         <Route path="/subject" element={<Subject />} />
@@ -39,6 +50,7 @@ const App = () => {
         <Route path="/salary" element={<Salary />} />
         <Route path="/expense" element={<Expense />} />
         <Route path="/analytics" element={<Analytics />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>
   ) : (

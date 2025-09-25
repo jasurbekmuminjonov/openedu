@@ -6,22 +6,33 @@ import {
   Form,
   InputNumber,
   notification,
+  Tabs,
+  Select,
 } from "antd";
 import { useGetGroupQuery } from "../context/services/group.service";
 import { useGetTeacherQuery } from "../context/services/teacher.service";
 import { FaList } from "react-icons/fa6";
-import { useCreateSalaryMutation } from "../context/services/salary.service";
+import {
+  useCreateSalaryMutation,
+  useGetSalaryQuery,
+} from "../context/services/salary.service";
 import { LiaMoneyBillWaveSolid } from "react-icons/lia";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 
 const Salary = () => {
   const { data: teachers = [], isLoading: teachersLoading } =
     useGetTeacherQuery();
+  const [activeTab, setActiveTab] = useState("1");
   const { data: groups, isLoading: groupLoading } = useGetGroupQuery();
   const navigate = useNavigate();
   const [createSalary, { isLoading: createSalaryLoading }] =
     useCreateSalaryMutation();
+  const { data: salary = [], isLoading: salaryLoading } = useGetSalaryQuery();
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+
   const columns = [
     {
       title: "№",
@@ -203,15 +214,115 @@ const Salary = () => {
       ),
     },
   ];
+
+  const salaryColumns = [
+    {
+      title: (
+        <Select
+          allowClear
+          placeholder="O'qituvchi tanlang"
+          style={{ width: "300px" }}
+          value={selectedStaff}
+          onChange={setSelectedStaff}
+        >
+          {teachers.map((t) => (
+            <Select.Option key={t._id} value={t._id}>
+              {t.first_name} {t.last_name}
+            </Select.Option>
+          ))}
+        </Select>
+      ),
+      dataIndex: "teacher_id",
+      render: (text) => `${text.first_name} ${text.last_name}`,
+    },
+    {
+      title: "Summa",
+      dataIndex: "salary_amount",
+      render: (text) => text.toLocaleString("ru-RU"),
+    },
+    {
+      title: (
+        <div
+          style={{
+            display: "flex",
+            width: "150px",
+            gap: "4px",
+            flexDirection: "column",
+          }}
+        >
+          <input
+            type="date"
+            value={dateRange[0] || ""}
+            onChange={(e) => setDateRange([e.target.value, dateRange[1]])}
+          />
+          <input
+            type="date"
+            value={dateRange[1] || ""}
+            onChange={(e) => setDateRange([dateRange[0], e.target.value])}
+          />
+        </div>
+      ),
+      dataIndex: "createdAt",
+      render: (text) => new Date(text).toLocaleString("ru-RU"),
+    },
+  ];
+
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const filteredSalary = useMemo(() => {
+    return salary.filter((s) => {
+      let pass = true;
+
+      if (dateRange[0] && dateRange[1]) {
+        const start = normalizeDate(dateRange[0]);
+        const end = normalizeDate(dateRange[1]);
+        const current = normalizeDate(s.createdAt);
+        pass = pass && current >= start && current <= end;
+      }
+
+      if (selectedStaff) {
+        pass = pass && s.teacher_id._id === selectedStaff;
+      }
+
+      return pass;
+    });
+  }, [salary, dateRange, selectedStaff]);
+  const totalSalary = useMemo(() => {
+    return filteredSalary.reduce((acc, s) => acc + s.salary_amount, 0);
+  }, [filteredSalary]);
   return (
     <div className="page">
       <p>Oylik maosh</p>
-      <Table
-        loading={teachersLoading || groupLoading}
-        columns={columns}
-        dataSource={teachers}
-        size="small"
-      />
+      <Tabs activeKey={activeTab} onChange={setActiveTab}>
+        <Tabs.TabPane key="1" tab="Maosh berish">
+          <Table
+            loading={teachersLoading || groupLoading}
+            columns={columns}
+            dataSource={teachers}
+            size="small"
+          />
+        </Tabs.TabPane>
+        <Tabs.TabPane key="2" tab="Berilgan maoshlar">
+          <Table
+            loading={salaryLoading}
+            size="small"
+            columns={salaryColumns}
+            dataSource={filteredSalary.sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            )}
+            footer={() => (
+              <div style={{ fontWeight: "500", textAlign: "right" }}>
+                Jami: {totalSalary.toLocaleString("ru-RU")} UZS
+              </div>
+            )}
+          />
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   );
 };

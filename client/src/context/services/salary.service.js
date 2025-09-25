@@ -7,7 +7,11 @@ export const salaryApi = api.injectEndpoints({
       invalidatesTags: ["Salary"],
     }),
     getSalary: builder.query({
-      query: () => ({ url: "/salary/get" }),
+      query: ({ teacher_id } = {}) => ({
+        url: teacher_id
+          ? `/salary/get?teacher_id=${teacher_id}`
+          : "/salary/get",
+      }),
       providesTags: ["Salary"],
     }),
     deleteSalary: builder.mutation({

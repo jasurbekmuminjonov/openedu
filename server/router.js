@@ -5,6 +5,7 @@ const {
   editOrganizationPassword,
   editOrganization,
   terminateOrganization,
+  getOrganization,
 } = require("./controllers/organization.controller");
 const {
   createStaff,
@@ -62,6 +63,7 @@ rt.post("/organization/login", loginOrganization);
 rt.put("/organization/edit/password", editOrganizationPassword);
 rt.put("/organization/edit", editOrganization);
 rt.delete("/organization/terminate", terminateOrganization);
+rt.get("/organization/get", getOrganization);
 
 rt.post("/staff/create", createStaff);
 rt.post("/staff/login", loginStaff);

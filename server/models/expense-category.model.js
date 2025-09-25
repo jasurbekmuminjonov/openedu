@@ -11,6 +11,10 @@ const ExpenseCategorySchema = new mongoose.Schema(
       ref: "Organization",
       required: true,
     },
+    color: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
